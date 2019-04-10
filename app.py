@@ -31,6 +31,10 @@ app.config.from_pyfile('private_config.cfg', silent=True)
 # made line api
 line_bot_api = LineBotApi(app.config['LINE_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(app.config['LINE_CHANNEL_SECRET'])
+# user_status
+# 0 : present
+# 1 : absent
+bot_user_status = 0 
 
 
 
@@ -57,10 +61,20 @@ def webhook():
 # TextMessage handler
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    global bot_user_status
     recieved_message = event.message.text
     send_message = recieved_message + '\uDBC0\uDCB1'
     if 'ただいま' in recieved_message:
         send_message = 'おかえり\uDBC0\uDCB1'
+        bot_user_status = 0
+    elif 'いってきます' in recieved_message:
+        send_message = 'いってらっしゃい!気を付けてね～'
+        bot_user_status = 1
+    elif 'わたしはどこ' in recieved_message:
+        if bot_user_status == 0 :
+            send_message = 'ウチにいるよ？'
+        else :
+            send_message = '外出してるよ？'
     else:
         pass
 
