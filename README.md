@@ -16,6 +16,6 @@ export FLASK_PORT=<YOUR_PORT>
 ```
 4. start service
 ```
-# nohup start.sh &
+# nohup ./start.sh &
 ```
 
