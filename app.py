@@ -1,5 +1,6 @@
 import os
-import codecs
+import time
+import random
 
 from flask import Flask, request, abort
 
@@ -77,6 +78,9 @@ def handle_message(event):
             send_message = '外出してるよ？'
     else:
         pass
+    
+    # 即答せずに少し待つ
+    time.sleep(random.randrange(5, 20, 1))
 
     line_bot_api.reply_message(
         event.reply_token,
