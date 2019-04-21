@@ -7,54 +7,54 @@ from html.parser import HTMLParser
 class RecipeNumParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        self._num = -1
-        self._recipe_str_flag = False
-        self._num_flag = False
+        self.__num = -1
+        self.__recipe_str_flag = False
+        self.__num_flag = False
 
     @property
     def num(self):
-        return self._num
+        return self.__num
 
     def handle_starttag(self, tag, attrs):
-        if self._num != -1:
+        if self.__num != -1:
             return
         attrs = dict(attrs)
         if tag == "span" and 'class' in attrs and attrs['class'] == 'num':
-            self._num_flag = True
+            self.__num_flag = True
         else:
-            self._num_flag = False
+            self.__num_flag = False
 
     def handle_data(self, data):
-        if self._num != -1:
+        if self.__num != -1:
             return
         if 'レシピ一覧' in data: 
-            self._recipe_str_flag = True
-        elif self._recipe_str_flag==True and self._num_flag==True :
-            self._recipe_str_flag = False
-            self._num = int(data)
+            self.__recipe_str_flag = True
+        elif self.__recipe_str_flag==True and self.__num_flag==True :
+            self.__recipe_str_flag = False
+            self.__num = int(data)
         else:
-            self._recipe_str_flag = False
+            self.__recipe_str_flag = False
             
 
 class RecipeParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        self._recipe_list = []
+        self.__recipe_list = []
 
     @property
     def recipe_list(self):
-        return self._recipe_list
+        return self.__recipe_list
         
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         if tag == 'div' and 'class' in attrs and 'data-url' in attrs and attrs['class'] == 'recipe--category-recipe':
-            self._recipe_list.append(attrs['data-url'])
+            self.__recipe_list.append(attrs['data-url'])
 
 
 class NHKRecipe : 
     def __init__(self) :
-        self._root_url = 'https://www.kyounoryouri.jp'
-        self._params = {
+        self.__root_url = 'https://www.kyounoryouri.jp'
+        self.__params = {
             'keyword' : '',
             'timeclass' : '',
             'genre[]' : '',
@@ -67,7 +67,7 @@ class NHKRecipe :
    
     def get_random_recipe(self) :
         # 一回検索しレシピ数を取得
-        req = urllib.request.Request('{}?{}'.format(self._root_url+'/search/recipe', urllib.parse.urlencode(self._params)))
+        req = urllib.request.Request('{}?{}'.format(self.__root_url+'/search/recipe', urllib.parse.urlencode(self.__params)))
         with urllib.request.urlopen(req) as res :
             body = res.read().decode(encoding='utf-8')
             # レシピ数をパースして取得
@@ -86,8 +86,8 @@ class NHKRecipe :
         
 
         # ランダムなページのランダムなレシピを取得する
-        self._params['pg'] = random.randrange(1, max_page, 1)
-        req = urllib.request.Request('{}?{}'.format(self._root_url+'/search/recipe', urllib.parse.urlencode(self._params)))
+        self.__params['pg'] = random.randrange(1, max_page, 1)
+        req = urllib.request.Request('{}?{}'.format(self.__root_url+'/search/recipe', urllib.parse.urlencode(self.__params)))
         with urllib.request.urlopen(req) as res :
             body = res.read().decode(encoding='utf-8')
             # レシピをパースして取得
@@ -98,5 +98,5 @@ class NHKRecipe :
         if len(recipe_parser.recipe_list) == 0:
             return None
         else:
-            return self._root_url + recipe_parser.recipe_list[random.randrange(0, len(recipe_parser.recipe_list)-1, 1)]
+            return self.__root_url + recipe_parser.recipe_list[random.randrange(0, len(recipe_parser.recipe_list)-1, 1)]
         
