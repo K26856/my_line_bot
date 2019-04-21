@@ -2,7 +2,7 @@ import os
 import time
 import random
 
-from models import nhk_recipe
+from models.nhkrecipe import recipe
 
 from flask import Flask, request, abort
 
@@ -79,7 +79,7 @@ def handle_message(event):
         else :
             send_message = '外出してるよ？'
     elif '何が食べたい？' in recieved_message:
-        recipe_site = nhk_recipe.NHKRecipe()
+        recipe_site = recipe.NHKRecipe()
         send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
     else:
         pass
