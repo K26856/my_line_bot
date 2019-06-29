@@ -2,7 +2,7 @@ import os
 import time
 import random
 
-from models.nhkrecipe import recipe
+from models.cooking.nhkrecipe import recipe
 
 from flask import Flask, request, abort
 
