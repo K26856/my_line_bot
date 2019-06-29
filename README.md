@@ -1,4 +1,8 @@
 # my_line_bot
+## abstract
+自炊ガチャ
+line_botが「食べたい！」と言ってくるものを作ってあげる
+
 ## usage
 1. pip install
 ```
