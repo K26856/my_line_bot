@@ -61,7 +61,7 @@ def webhook():
 # TextMessage handler
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    send_message = scenario.text_message_handler
+    send_message = scenario.text_message_handler(event)
 
     # 即答せずに少し待つ
     time.sleep(random.randrange(5, 20, 1))
