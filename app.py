@@ -2,7 +2,7 @@ import os
 import time
 import random
 
-from models.cooking.nhkrecipe import recipe
+import coordinator
 
 from flask import Flask, request, abort
 
@@ -30,15 +30,12 @@ app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(config[os.getenv('FLASK_ENV', 'production')])
 app.config.from_pyfile('private_config.cfg', silent=True)
 
-
 # made line api
 line_bot_api = LineBotApi(app.config['LINE_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(app.config['LINE_CHANNEL_SECRET'])
-# user_status
-# 0 : present
-# 1 : absent
-bot_user_status = 0 
 
+# bot scenario
+scenario = coordinator.Coordinator()
 
 
 # webhook
@@ -64,29 +61,12 @@ def webhook():
 # TextMessage handler
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    global bot_user_status
-    recieved_message = event.message.text
-    send_message = recieved_message + '\uDBC0\uDCB1'
-    if 'ただいま' in recieved_message:
-        send_message = 'おかえり\uDBC0\uDCB1'
-        bot_user_status = 0
-    elif 'いってきます' in recieved_message:
-        send_message = 'いってらっしゃい!気を付けてね～'
-        bot_user_status = 1
-    elif 'わたしはどこ' in recieved_message:
-        if bot_user_status == 0 :
-            send_message = 'ウチにいるよ？'
-        else :
-            send_message = '外出してるよ？'
-    elif '何が食べたい？' in recieved_message:
-        recipe_site = recipe.NHKRecipe()
-        send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
-    else:
-        pass
-    
+    send_message = scenario.text_message_handler(event)
+
     # 即答せずに少し待つ
     time.sleep(random.randrange(5, 20, 1))
 
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=send_message))
+        TextSendMessage(text=send_message)
+        )
