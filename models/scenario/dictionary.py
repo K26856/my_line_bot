@@ -1,7 +1,7 @@
 class Dictionary :
 
-    DICT_RANDOM = 'dics/random_message.dat'
-    DICT_PATTERN = 'dics/pattern_message.dat'
+    DICT_RANDOM = './dics/random_message.dat'
+    DICT_PATTERN = './dics/pattern_message.dat'
 
     def __init__(self) :
         self.__random_messages= []
