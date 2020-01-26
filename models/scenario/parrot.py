@@ -7,7 +7,7 @@ class Parrot :
         """
         print(self.__class__)
         print(params.__class__)
-        print(params.keys)
+        print(params.keys())
         response_message = '{}ってなに？'.format(params.message)
         return response_message
 
