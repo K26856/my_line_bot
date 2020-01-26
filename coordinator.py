@@ -1,5 +1,6 @@
 from models.cooking.nhkrecipe import recipe
 from models.scenario import responder
+from models.scenario import dictionary
 
 class Coordinator :
     
@@ -8,15 +9,11 @@ class Coordinator :
         # 0 : present
         # 1 : absent
         self.__bot_user_status = 0 
+        self.__dictionary = dictionary.Dictionary()
         self.__responders = {
-            'parrot' : responder.Parrot(), 
-            'random' : responder.RandomTalker()
-        }
-        self.__keywords = {
-            'ただいま' : '',
-            'いってきます' : '',
-            'わたしはどこ' : '',
-            '何が食べたい' : ''
+            'parrot' : responder.Parrot(self.__dictionary), 
+            'random' : responder.RandomTalker(self.__dictionary),
+            'pattern' : responder.PatternTalker(self.__dictionary)
         }
 
     @property
@@ -30,7 +27,7 @@ class Coordinator :
             'message' : recieved_message
         })
         send_message += '\r\n'
-        send_message += self.__responders['random'].response({
+        send_message += self.__responders['pattern'].response({
             'message' : recieved_message
         }) 
 

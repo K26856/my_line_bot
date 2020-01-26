@@ -1,8 +1,10 @@
 from random import choice
+import re
 
 class Responder :
 
-    def __init__(self) :
+    def __init__(self, dictionary) :
+        self.__dictionary = dictionary
         pass
 
     def response(self, params):
@@ -24,15 +26,17 @@ class Parrot(Responder) :
 
 class RandomTalker(Responder) :
 
-    def __init__(self) : 
-        super().__init__(self)
-        self.__responses = []
-
-        with open('dics/random_message.dat', mode='r', encoding='utf-8') as f :
-            for line in f : 
-                if line :
-                    line = line.strip()
-                    self.__responses.append(line)
-
     def response(self, _) :
-        return choice(self.__responses)
+        return choice(self.__dictionary.random_messages)
+
+
+
+class PatternTalker(Responder) : 
+
+    def response(self, params) : 
+        for ptn in self.__dictionary.pattern :
+            matcher = re.match(ptn['pattern'], params['message'])
+            if matcher :
+                chosen_message = choice(ptn['phrases'])
+                return chosen_message.replace('%match%', matcher[0])
+        return choice(self.__dictionary.random_messages)
