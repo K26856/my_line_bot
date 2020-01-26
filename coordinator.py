@@ -13,7 +13,7 @@ class Coordinator :
         recieved_message = event.message.text
 
         send_message = self.parrot_responder.response({
-            message : recieved_message
+            'message' : recieved_message
         })
 
         if 'ただいま' in recieved_message:
