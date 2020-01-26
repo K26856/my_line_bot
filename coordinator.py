@@ -8,8 +8,10 @@ class Coordinator :
         # 0 : present
         # 1 : absent
         self.__bot_user_status = 0 
-        self.__parrot_responder = responder.Parrot()
-        self.__random_responder = responder.RandomTalker()
+        self.__responders = {
+            'parrot' : responder.Parrot(), 
+            'random' : responder.RandomTalker()
+        }
         self.__keywords = {
             'ただいま' : '',
             'いってきます' : '',
@@ -18,33 +20,28 @@ class Coordinator :
         }
 
     @property
-    def bot_user_status(self) : 
-        return self.__bot_user_status
-
-    @property
     def keywords(self) : 
-        return self.__keywords
-
+        return self.__keywords.keys()
 
     def text_message_handler(self, event) :
         recieved_message = event.message.text
 
-        send_message = self.__parrot_responder.response({
+        send_message = self.__responders['parrot'].response({
             'message' : recieved_message
         })
         send_message += '\r\n'
-        send_message += self.__random_responder.response({
+        send_message += self.__responders['random'].response({
             'message' : recieved_message
         }) 
 
         if 'ただいま' in recieved_message:
             send_message = 'おかえり\uDBC0\uDCB1'
-            self.bot_user_status = 0
+            self.__bot_user_status = 0
         elif 'いってきます' in recieved_message:
             send_message = 'いってらっしゃい!気を付けてね～'
-            self.bot_user_status = 1
+            self.__bot_user_status = 1
         elif 'わたしはどこ' in recieved_message:
-            if self.bot_user_status == 0 :
+            if self.__bot_user_status == 0 :
                 send_message = 'ウチにいるよ？'
             else :
                 send_message = '外出してるよ？'

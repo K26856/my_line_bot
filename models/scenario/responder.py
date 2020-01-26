@@ -1,6 +1,7 @@
 from random import choice
 
 class Responder :
+
     def __init__(self) :
         pass
 
@@ -11,18 +12,26 @@ class Responder :
         """
         pass
 
+
+
 class Parrot(Responder) :
+
     def response(self, params) : 
         response_message = '{}ってなに？'.format(params['message'])
         return response_message
 
+
+
 class RandomTalker(Responder) :
-    RESPONSES = [
-        '今日は寒いね',
-        '今日は暑いね',
-        'チョコ食べたいなぁ'
-    ]
+
+    def __init__(self) : 
+        super().__init__(self)
+        self.__responses = []
+        with open('dics/random_message.dat', encoding='utf-8') as f :
+            for line in f : 
+                if line :
+                    line = line.strip()
+                    self.__responses.append(line)
 
     def response(self, _) :
-        return choice(RandomTalker.RESPONSES)
-        
+        return choice(self.__responses)
