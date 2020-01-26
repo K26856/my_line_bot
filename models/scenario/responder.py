@@ -5,7 +5,6 @@ class Responder :
 
     def __init__(self, dictionary) :
         self.__dictionary = dictionary
-        pass
 
     def response(self, params):
         """
