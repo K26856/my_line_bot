@@ -2,8 +2,9 @@ class Parrot :
     def __init__(self) :
         pass
 
-    def get_message(self, params):
+    def response(self, params):
         """
         """
-        return params.message
-        
+        response_message = '{}ってなに？'.format(params.message)
+        return response_message
+

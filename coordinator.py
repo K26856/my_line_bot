@@ -1,4 +1,5 @@
 from models.cooking.nhkrecipe import recipe
+from models.scenario import parrot
 
 class Coordinator :
     def __init__(self) :
@@ -6,10 +7,15 @@ class Coordinator :
         # 0 : present
         # 1 : absent
         self.bot_user_status = 0 
+        self.parrot_responder = parrot.Parrot()
 
     def text_message_handler(self, event) :
         recieved_message = event.message.text
-        send_message = recieved_message + '\uDBC0\uDCB1'
+
+        send_message = self.parrot_responder.response({
+            message : recieved_message
+        })
+
         if 'ただいま' in recieved_message:
             send_message = 'おかえり\uDBC0\uDCB1'
             self.bot_user_status = 0
