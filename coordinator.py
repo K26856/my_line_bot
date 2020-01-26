@@ -1,6 +1,5 @@
 from models.cooking.nhkrecipe import recipe
-from models.scenario import parrot
-from models.scenario import random_talker
+from models.scenario import responder
 
 class Coordinator :
     
@@ -9,8 +8,8 @@ class Coordinator :
         # 0 : present
         # 1 : absent
         self.__bot_user_status = 0 
-        self.__parrot_responder = parrot.Parrot()
-        self.__random_responder = random_talker.RandomTalker()
+        self.__parrot_responder = responder.Parrot()
+        self.__random_responder = responder.RandomTalker()
         self.__keywords = {
             'ただいま' : '',
             'いってきます' : '',
