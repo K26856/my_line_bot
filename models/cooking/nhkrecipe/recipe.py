@@ -6,7 +6,11 @@ from . import parser
 class NHKRecipe :
     def __init__(self) :
         self.__root_url = 'https://www.kyounoryouri.jp'
-  
+
+    @property
+    def root_url(self) : 
+        return self.__root_url
+      
     def get_recipe_num(self, params):
         """
         get the number of recipes
@@ -14,7 +18,7 @@ class NHKRecipe :
              success : correct number
              error   : -1
         """
-        req = urllib.request.Request('{}?{}'.format(self.__root_url+'/search/recipe', urllib.parse.urlencode(params)))
+        req = urllib.request.Request('{}?{}'.format(self.root_url+'/search/recipe', urllib.parse.urlencode(params)))
         with urllib.request.urlopen(req) as res :
             body = res.read().decode(encoding='utf-8')
             # レシピ数をパースして取得
@@ -30,7 +34,7 @@ class NHKRecipe :
             success : recipe list
             error   : empty list
         """
-        req = urllib.request.Request('{}?{}'.format(self.__root_url+'/search/recipe', urllib.parse.urlencode(params)))
+        req = urllib.request.Request('{}?{}'.format(self.root_url+'/search/recipe', urllib.parse.urlencode(params)))
         with urllib.request.urlopen(req) as res :
             body = res.read().decode(encoding='utf-8')
             # レシピをパースして取得
@@ -85,4 +89,4 @@ class NHKRecipe :
             return ''
         
         # レシピリストからランダムに選択し出力する
-        return self.__root_url + recipe_list[random.randrange(0, len(recipe_list)-1, 1)]
+        return self.root_url + recipe_list[random.randrange(0, len(recipe_list)-1, 1)]

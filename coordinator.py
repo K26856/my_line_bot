@@ -6,8 +6,27 @@ class Coordinator :
         # user_status
         # 0 : present
         # 1 : absent
-        self.bot_user_status = 0 
-        self.parrot_responder = parrot.Parrot()
+        self.__bot_user_status = 0 
+        self.__parrot_responder = parrot.Parrot()
+        self.__keywords = {
+            'ただいま' : '',
+            'いってきます' : '',
+            'わたしはどこ' : '',
+            '何が食べたい' : ''
+        }
+
+    @property
+    def bot_user_status(self) : 
+        return self.__bot_user_status
+
+    @property
+    def parrot_responder(self) : 
+        return self.__parrot_responder
+
+    @property
+    def keywords(self) : 
+        return self.__keywords
+
 
     def text_message_handler(self, event) :
         recieved_message = event.message.text
