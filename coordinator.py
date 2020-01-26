@@ -2,6 +2,7 @@ from models.cooking.nhkrecipe import recipe
 from models.scenario import parrot
 
 class Coordinator :
+    
     def __init__(self) :
         # user_status
         # 0 : present
