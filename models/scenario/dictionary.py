@@ -27,3 +27,4 @@ class Dictionary :
     @property
     def pattern_messages(self) : 
         return self.__pattern_messages
+        
