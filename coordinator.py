@@ -1,15 +1,42 @@
 from models.cooking.nhkrecipe import recipe
+from models.scenario import responder
 
 class Coordinator :
+    
     def __init__(self) :
         # user_status
         # 0 : present
         # 1 : absent
-        self.bot_user_status = 0 
+        self.__bot_user_status = 0 
+        self.__parrot_responder = responder.Parrot()
+        self.__random_responder = responder.RandomTalker()
+        self.__keywords = {
+            'ただいま' : '',
+            'いってきます' : '',
+            'わたしはどこ' : '',
+            '何が食べたい' : ''
+        }
+
+    @property
+    def bot_user_status(self) : 
+        return self.__bot_user_status
+
+    @property
+    def keywords(self) : 
+        return self.__keywords
+
 
     def text_message_handler(self, event) :
         recieved_message = event.message.text
-        send_message = recieved_message + '\uDBC0\uDCB1'
+
+        send_message = self.__parrot_responder.response({
+            'message' : recieved_message
+        })
+        send_message += '\r\n'
+        send_message += self.__random_responder.response({
+            'message' : recieved_message
+        }) 
+
         if 'ただいま' in recieved_message:
             send_message = 'おかえり\uDBC0\uDCB1'
             self.bot_user_status = 0
