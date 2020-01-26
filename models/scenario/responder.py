@@ -30,10 +30,9 @@ class RandomTalker(Responder) :
 class PatternTalker(Responder) : 
     def response(self, params) : 
         
-        for ptn in self._dictionary.pattern :
+        for ptn in self._dictionary.pattern_messages :
             matcher = re.match(ptn['pattern'], params['message'])
             if matcher :
                 chosen_message = choice(ptn['phrases'])
                 return chosen_message.replace('%match%', matcher[0])
         return choice(self._dictionary.random_messages)
-        
