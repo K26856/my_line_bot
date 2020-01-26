@@ -27,7 +27,8 @@ class RandomTalker(Responder) :
     def __init__(self) : 
         super().__init__(self)
         self.__responses = []
-        with open('dics/random_message.dat', encoding='utf-8') as f :
+
+        with open('dics/random_message.dat', mode='r', encoding='utf-8') as f :
             for line in f : 
                 if line :
                     line = line.strip()
