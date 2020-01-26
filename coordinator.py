@@ -1,5 +1,6 @@
 from models.cooking.nhkrecipe import recipe
 from models.scenario import parrot
+from models.scenario import random_talker
 
 class Coordinator :
     
@@ -9,6 +10,7 @@ class Coordinator :
         # 1 : absent
         self.__bot_user_status = 0 
         self.__parrot_responder = parrot.Parrot()
+        self.__random_responder = random_talker.RandomTalker()
         self.__keywords = {
             'ただいま' : '',
             'いってきます' : '',
@@ -21,10 +23,6 @@ class Coordinator :
         return self.__bot_user_status
 
     @property
-    def parrot_responder(self) : 
-        return self.__parrot_responder
-
-    @property
     def keywords(self) : 
         return self.__keywords
 
@@ -32,9 +30,13 @@ class Coordinator :
     def text_message_handler(self, event) :
         recieved_message = event.message.text
 
-        send_message = self.parrot_responder.response({
+        send_message = self.__parrot_responder.response({
             'message' : recieved_message
         })
+        send_message += '\r\n'
+        send_message += self.__random_responder({
+            'message' : recieved_message
+        }) 
 
         if 'ただいま' in recieved_message:
             send_message = 'おかえり\uDBC0\uDCB1'
