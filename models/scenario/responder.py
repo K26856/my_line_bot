@@ -25,3 +25,4 @@ class RandomTalker(Responder) :
 
     def response(self, _) :
         return choice(RandomTalker.RESPONSES)
+        
