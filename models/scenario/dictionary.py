@@ -8,7 +8,7 @@ class Dictionary :
         self.__pattern_messages = []
 
         with open(Dictionary.DICT_RANDOM, mode='r', encoding='utf-8') as f :
-            self.__random_messages = [x for x in f.read().splitlines if x]
+            self.__random_messages = [x for x in f.read().splitlines() if x]
 
         with open(Dictionary.DICT_PATTERN, mode='r', encoding='utf-8') as f : 
             for line in f : 
