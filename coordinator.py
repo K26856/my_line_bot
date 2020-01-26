@@ -34,7 +34,7 @@ class Coordinator :
             'message' : recieved_message
         })
         send_message += '\r\n'
-        send_message += self.__random_responder({
+        send_message += self.__random_responder.response({
             'message' : recieved_message
         }) 
 
