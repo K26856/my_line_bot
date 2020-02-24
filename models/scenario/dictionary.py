@@ -27,4 +27,9 @@ class Dictionary :
     @property
     def pattern_messages(self) : 
         return self.__pattern_messages
-        
+
+    def study(self, text) :
+        if not text in self.__random_messages : 
+            self.__random_messages.append(test)
+            with open(Dictionary.DICT_RANDOM, mode='a', encoding='utf-8') af f :
+                f.write(text + '\n')
