@@ -31,5 +31,5 @@ class Dictionary :
     def study(self, text) :
         if not text in self.__random_messages : 
             self.__random_messages.append(test)
-            with open(Dictionary.DICT_RANDOM, mode='a', encoding='utf-8') af f :
+            with open(Dictionary.DICT_RANDOM, mode='a', encoding='utf-8') as f :
                 f.write(text + '\n')
