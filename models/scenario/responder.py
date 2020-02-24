@@ -16,7 +16,6 @@ class Responder :
 
 class Parrot(Responder) :
     def response(self, params) : 
-        self._dictionary.study(params['message'])
         response_message = '{}ってなに？'.format(params['message'])
         return response_message
 
@@ -34,6 +33,5 @@ class PatternTalker(Responder) :
             matcher = re.match(ptn['pattern'], params['message']) 
             if matcher :
                 chosen_message = choice(ptn['phrases'])
-                print(chosen_message) 
                 return chosen_message.replace('%match%', matcher.group(0))
         return choice(self._dictionary.random_messages)

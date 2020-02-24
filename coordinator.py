@@ -43,4 +43,8 @@ class Coordinator :
                 send_message += self.__responders['parrot'].response({
                     'message' : recieved_message
                 }) + '\r\n'
+
+        # study message
+        self.__dictionary.study(recieved_message)
+        
         return send_message
