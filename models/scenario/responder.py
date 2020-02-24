@@ -24,7 +24,7 @@ class Parrot(Responder) :
 
 class RandomTalker(Responder) :
     def response(self, _) :
-        return choice(self.__dictionary.random_messages)
+        return choice(self._dictionary.random_messages)
 
 
 
