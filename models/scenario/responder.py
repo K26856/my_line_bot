@@ -3,7 +3,7 @@ import re
 
 class Responder :
     def __init__(self, dictionary) :
-        self.__dictionary = dictionary
+        self._dictionary = dictionary
 
     def response(self, params):
         """
@@ -16,7 +16,7 @@ class Responder :
 
 class Parrot(Responder) :
     def response(self, params) : 
-        self.__dictionary.study(params['message'])
+        self._dictionary.study(params['message'])
         response_message = '{}ってなに？'.format(params['message'])
         return response_message
 
@@ -30,10 +30,10 @@ class RandomTalker(Responder) :
 
 class PatternTalker(Responder) : 
     def response(self, params) : 
-        for ptn in self.__dictionary.pattern_messages :
+        for ptn in self._dictionary.pattern_messages :
             matcher = re.match(ptn['pattern'], params['message']) 
             if matcher :
                 chosen_message = choice(ptn['phrases'])
                 print(chosen_message) 
                 return chosen_message.replace('%match%', matcher.group(0))
-        return choice(self.__dictionary.random_messages)
+        return choice(self._dictionary.random_messages)
