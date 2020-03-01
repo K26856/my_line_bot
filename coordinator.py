@@ -24,9 +24,9 @@ class Coordinator :
 
         if 'わたしはどこ' in recieved_message:
             if self.__bot_user_status == 0 :
-                send_message = 'ウチにいるよ？\r\n'
+                send_message = 'ウチにいるよ？'
             else :
-                send_message = '外出してるよ？\r\n'
+                send_message = '外出してるよ？'
         elif '何が食べたい？' in recieved_message:
             recipe_site = recipe.NHKRecipe()
             send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
@@ -35,19 +35,19 @@ class Coordinator :
             if chance in range(0, 39) : 
                 send_message += self.__responders['pattern'].response({
                     'message' : recieved_message
-                }) + '\r\n'
+                })
             elif chance in range(40, 79) :
                 send_message += self.__responders['template'].response({
                     'message' : recieved_message
-                }) + '\r\n'
+                })
             elif chance in range(80, 89) :
                 send_message += self.__responders['random'].response({
                     'message' : recieved_message
-                }) + '\r\n'
+                })
             else :
                 send_message += self.__responders['parrot'].response({
                     'message' : recieved_message
-                }) + '\r\n'
+                })
 
         # study message
         self.__dictionary.study(recieved_message)
