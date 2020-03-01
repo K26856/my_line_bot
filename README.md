@@ -7,8 +7,6 @@ flask，line_botのお試し
 - 自炊ガチャ
     - 「何が食べたい」と聞くと，食べたいもののレシピのリンクを送ってくる
 - 人口無能
-    - オウム返し
-    - テキトーな言葉をランダムで返す
 
 ## usage
 1. pip install
@@ -30,3 +28,6 @@ export FLASK_PORT=<YOUR_PORT>
 # nohup ./start.sh &
 ```
 
+
+## 勉強元
+- 人口無能 : http://sandmark.hateblo.jp/entry/2017/10/07/141339

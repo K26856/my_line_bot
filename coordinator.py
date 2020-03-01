@@ -14,7 +14,8 @@ class Coordinator :
         self.__responders = {
             'parrot' : responder.Parrot(self.__dictionary), 
             'random' : responder.RandomTalker(self.__dictionary),
-            'pattern' : responder.PatternTalker(self.__dictionary)
+            'pattern' : responder.PatternTalker(self.__dictionary),
+            'template' : responder.TemplateTalker(self.__dictionary)
         }
 
     def text_message_handler(self, event) :
@@ -31,11 +32,15 @@ class Coordinator :
             send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
         else:
             chance = randrange(0, 100)
-            if chance in range(0, 59) : 
+            if chance in range(0, 39) : 
                 send_message += self.__responders['pattern'].response({
                     'message' : recieved_message
                 }) + '\r\n'
-            elif chance in range(60, 89) :
+            elif chance in range(40, 79) :
+                send_message += self.__responders['template'].response({
+                    'message' : recieved_message
+                }) + '\r\n'
+            elif chance in range(80, 89) :
                 send_message += self.__responders['random'].response({
                     'message' : recieved_message
                 }) + '\r\n'

@@ -1,5 +1,6 @@
 from random import choice
 import re
+from models.tools.analyzer import MessageAnalyzer
 
 class Responder :
     def __init__(self, dictionary) :
@@ -35,3 +36,19 @@ class PatternTalker(Responder) :
                 chosen_message = choice(ptn['phrases'])
                 return chosen_message.replace('%match%', matcher.group(0))
         return choice(self._dictionary.random_messages)
+
+class TemplateTalker(Responder) :
+    def response(self, params) :
+        parts = MessageAnalyzer.analyze(params['message'])
+        keywords = [word for word, part in parts if MessageAnalyzer.is_keyword(part)]
+        count = len(keywords)
+        if count > 0 and count in self._dictionary.template_messages :
+            template = choice(self._dictionary.template_messages[count])
+            for keyword in keywords :
+                template = template.replace('%noun%', keyword, 1)
+            return template
+        else :
+            return choice(self._dictionary.random_messages)
+
+
+        
