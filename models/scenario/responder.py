@@ -3,8 +3,9 @@ import re
 from models.tools.analyzer import MessageAnalyzer
 
 class Responder :
-    def __init__(self, dictionary) :
+    def __init__(self, dictionary, markov) :
         self._dictionary = dictionary
+        self._markov = markov
 
     def response(self, params):
         """
@@ -49,6 +50,16 @@ class TemplateTalker(Responder) :
             return template
         else :
             return choice(self._dictionary.random_messages)
+
+class MarkovTalker(Responder) :
+    def response(self, params) :
+        response_text = self._markov.make_sentence()
+        if not response_text is None :
+            return response_text
+        else : 
+            return choice(self._dictionary.random_messages)
+
+
 
 
         

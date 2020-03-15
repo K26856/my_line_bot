@@ -1,4 +1,5 @@
 nohup.out
+models/tools/hmm_base/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

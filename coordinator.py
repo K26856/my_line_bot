@@ -1,6 +1,7 @@
 from models.cooking.nhkrecipe import recipe
 from models.scenario import responder
 from models.scenario import dictionary
+from models.tools.markov import HiddenMarkovModel
 from random import choice, randrange
 
 class Coordinator :
@@ -11,11 +12,13 @@ class Coordinator :
         # 1 : absent
         self.__bot_user_status = 0 
         self.__dictionary = dictionary.Dictionary()
+        self.__markov = HiddenMarkovModel()
         self.__responders = {
-            'parrot' : responder.Parrot(self.__dictionary), 
-            'random' : responder.RandomTalker(self.__dictionary),
-            'pattern' : responder.PatternTalker(self.__dictionary),
-            'template' : responder.TemplateTalker(self.__dictionary)
+            'parrot' : responder.Parrot(self.__dictionary, self.__markov), 
+            'random' : responder.RandomTalker(self.__dictionary, self.__markov),
+            'pattern' : responder.PatternTalker(self.__dictionary, self.__markov),
+            'template' : responder.TemplateTalker(self.__dictionary, self.__markov),
+            'markov' : responder.MarkovTalker(self.__dictionary, self.__markov)
         }
 
     def text_message_handler(self, event) :
@@ -32,15 +35,19 @@ class Coordinator :
             send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
         else:
             chance = randrange(0, 100)
-            if chance in range(0, 39) : 
+            if chance in range(0, 34) : 
                 send_message += self.__responders['pattern'].response({
                     'message' : recieved_message
                 })
-            elif chance in range(40, 79) :
+            elif chance in range(35, 59) :
                 send_message += self.__responders['template'].response({
                     'message' : recieved_message
                 })
-            elif chance in range(80, 89) :
+            elif chance in range(60, 84) :
+                send_message += self.__responders['markov'].response({
+                    'message' : recieved_message
+                })
+            elif chance in range(85, 94) :
                 send_message += self.__responders['random'].response({
                     'message' : recieved_message
                 })

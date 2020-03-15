@@ -36,6 +36,7 @@ handler = WebhookHandler(app.config['LINE_CHANNEL_SECRET'])
 
 # bot scenario
 scenario = coordinator.Coordinator()
+app.logger.info("[OK] loading coodinator")
 
 # webhook
 @app.route("/webhook", methods=['POST'])
@@ -45,7 +46,7 @@ def webhook():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    app.logger.debug("Request body: " + body)
 
     # handle webhook body
     try:
