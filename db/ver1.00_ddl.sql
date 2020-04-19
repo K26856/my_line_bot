@@ -13,4 +13,3 @@ create table if not exists markov(
     foreign key(pre_word2) references words(id),
     foreign key(next_word) references words(id)
 );
-
