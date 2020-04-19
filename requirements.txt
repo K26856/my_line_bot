@@ -1,2 +1,4 @@
 Flask==1.0.2
 line-bot-sdk==1.8.0
+Janome==0.3.10
+markovify==0.8.0
