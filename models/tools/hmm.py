@@ -19,7 +19,7 @@ class HiddenMarkovModel :
         self.__con.close()
 
     def make_sentence(self, start_with="", keyword="", max_length=20) :
-        sentence_word_ids = []
+        sentence = []
         keyword_id, _ = self.__select_word_by_word(keyword)
         pre_word_id = self.__sword_id
         pre_word2_id, _ = self.__select_word_by_word(start_with)
@@ -27,22 +27,25 @@ class HiddenMarkovModel :
         counter = 0
 
         if pre_word2_id :
-            sentence_word_ids.append(pre_word2_id)
+            sentence.append(start_with)
             counter += 1
 
         while pre_word2_id != self.__eword_id and counter < max_length :
             markovs = self.__select_markovs(pre_word_id, pre_word2_id)
             if counter == 0 :
                 pre_word_id, pre_word2_id, next_word_id, _ = self.__choice_markovs(keyword_id, markovs)
-                sentence_word_ids.append(pre_word2_id)
+                _, word = self.__select_word_by_id(pre_word2_id)
+                sentence.append(word)
                 counter += 1
             else :
                 pre_word_id, pre_word2_id, next_word_id, _ = self.__random_markovs(keyword_id, markovs)
-            sentence_word_ids.append(next_word_id)
+            _, word = self.__select_word_by_id(next_word_id)
+            sentence.append(word)
             counter += 1
             pre_word_id = pre_word2_id
             pre_word2_id = next_word_id
-        return sentence_word_ids
+        sentence.pop(-1)
+        return "".join(sentence)
 
     def __random_markovs(self, keyword_id, markovs) :
         rand_num = random.randrange(start=0, stop=1100, step=1)/1000
