@@ -20,6 +20,7 @@ class HiddenMarkovModel :
 
     def make_sentence(self, start_with="", keyword="", max_length=20) :
         sentence = []
+        sentence_ids = []
         keyword_id, _ = self.__select_word_by_word(keyword)
         pre_word_id = self.__sword_id
         pre_word2_id, _ = self.__select_word_by_word(start_with)
@@ -28,6 +29,7 @@ class HiddenMarkovModel :
 
         if pre_word2_id :
             sentence.append(start_with)
+            sentence_ids.append(pre_word_id)
             counter += 1
 
         while pre_word2_id != self.__eword_id and counter < max_length :
@@ -36,25 +38,27 @@ class HiddenMarkovModel :
                 pre_word_id, pre_word2_id, next_word_id, _ = self.__choice_markovs(keyword_id, markovs)
                 _, word = self.__select_word_by_id(pre_word2_id)
                 sentence.append(word)
+                sentence_ids.append(pre_word2_id)
                 counter += 1
             else :
-                pre_word_id, pre_word2_id, next_word_id, _ = self.__random_markovs(keyword_id, markovs)
+                pre_word_id, pre_word2_id, next_word_id, _ = self.__random_markovs(keyword_id, markovs, sentence_ids)
             _, word = self.__select_word_by_id(next_word_id)
             sentence.append(word)
+            sentence_ids.append(next_word_id)
             counter += 1
             pre_word_id = pre_word2_id
             pre_word2_id = next_word_id
         sentence.pop(-1)
         return "".join(sentence)
 
-    def __random_markovs(self, keyword_id, markovs) :
-        rand_num = random.randrange(start=0, stop=1100, step=1)/1000
+    def __random_markovs(self, keyword_id, markovs, sentence_ids) :
+        rand_num = random.randrange(start=0, stop=1050, step=1)/1000
         if keyword_id :
             for markov in markovs :
                 if keyword_id in markov :
                     return markov
         for markov in markovs :
-            if markov[3]-rand_num <= 0.0 :
+            if markov[3]-rand_num <= 0.0 and not(markov[2] in sentence_ids):
                 return markov
         return markovs[0]
 
