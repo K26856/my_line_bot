@@ -118,6 +118,14 @@ class HiddenMarkovModel :
         except sqlite3.Error as e :
             print(e)
 
+    def forget_grammer(self) :
+        try :
+            self.__con.execute("delete from sentences")
+            self.__con.commit()
+            self.__init_chains()
+        except sqlite3.Error as e :
+            print(e)
+
     def __select_word_by(self, word_id=None, word=None) :
         query_list = []
         query_tuple = ()
