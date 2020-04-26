@@ -69,9 +69,10 @@ class HiddenMarkovModel :
                     return chain
         return random.choice(chains)
 
-    def study_from_wakati_list(self, wakati_id_list) :
+    def study_from_wakati_list(self, wakati_id_list, restudy=False) :
+        if not(restudy):
+            self.__insert_sentences(" ".join(map(str,wakati_id_list)))
         wakati_id_list.append(self.__eword_id)
-        self.__insert_sentences(" ".join(map(str,wakati_id_list)))
         data = {}
         for i in range(1, self.__chain+1) :
             data["pre_word_id" + str(i)] = self.__sword_id
@@ -101,6 +102,21 @@ class HiddenMarkovModel :
             for line in f:
                 if line :
                     self.study_from_line(line)
+
+    def restudy(self) :
+        try :
+            check_data = self.__con.execute("select count(next_word_id) from chains" + str(self.__chain)).fetchone()[0]
+            if check_data > 0 :
+                return
+            self.__init_chains()
+            sentences = self.__con.execute("select id_sentence from sentences")
+            parts = sentences.fetchmany()
+            while len(parts) > 0 :
+                for part in parts :
+                    self.study_from_wakati_list(part[0].split(" "), restudy=True)
+                parts = sentences.fetchmany()
+        except sqlite3.Error as e :
+            print(e)
 
     def __select_word_by(self, word_id=None, word=None) :
         query_list = []
@@ -203,4 +219,5 @@ class HiddenMarkovModel :
             self.__con.execute("insert into sentences(id_sentence) values (?)", (sentence,))
             self.__con.commit()
         except sqlite3.Error as e :
-            print(e)        
+            print(e)
+
