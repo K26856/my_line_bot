@@ -105,10 +105,10 @@ class HiddenMarkovModel :
     def __select_word_by(self, word_id=None, word=None) :
         query_list = []
         query_tuple = ()
-        if word_id :
+        if word_id is not None :
             query_list.append("id=?")
             query_tuple += (word_id,)
-        if word :
+        if word is not None :
             query_list.append("word=?")
             query_tuple += (word,)
         sql  = "select id, word from words"
