@@ -10,10 +10,12 @@ class HiddenMarkovModel :
     END_WORD = "%END%"
     MIN_CHAIN = 2
     MAX_CHAIN = 5
+    __CON = None
 
     def __init__(self, chain=2) :
-        self.__con = sqlite3.connect(HiddenMarkovModel.DB_NAME)
-        self.__con.execute("pragma foreign_keys='ON'")
+        if HiddenMarkovModel.__CON is None :
+            HiddenMarkovModel.__CON = sqlite3.connect(HiddenMarkovModel.DB_NAME, check_same_thread=False)
+        HiddenMarkovModel.__CON.execute("pragma foreign_keys='ON'")
         self.__sword_id, _ = self.__select_word_by(word=HiddenMarkovModel.START_WORD)
         self.__eword_id, _ = self.__select_word_by(word=HiddenMarkovModel.END_WORD)
         self.__chain = chain
@@ -23,7 +25,8 @@ class HiddenMarkovModel :
             self.__chain = HiddenMarkovModel.MAX_CHAIN
 
     def __del__(self) :
-        self.__con.close()
+        if HiddenMarkovModel.__CON is not None :
+            HiddenMarkovModel.__CON.close()
 
     def make_sentence(self, start_with="", keyword="", max_length=20) :
         sentence = []
@@ -105,11 +108,11 @@ class HiddenMarkovModel :
 
     def restudy(self) :
         try :
-            check_data = self.__con.execute("select count(next_word_id) from chains" + str(self.__chain)).fetchone()[0]
+            check_data = HiddenMarkovModel.__CON.execute("select count(next_word_id) from chains" + str(self.__chain)).fetchone()[0]
             if check_data > 0 :
                 return
             self.__init_chains()
-            sentences = self.__con.execute("select id_sentence from sentences")
+            sentences = HiddenMarkovModel.__CON.execute("select id_sentence from sentences")
             parts = sentences.fetchmany()
             while len(parts) > 0 :
                 for part in parts :
@@ -120,8 +123,8 @@ class HiddenMarkovModel :
 
     def forget_grammer(self) :
         try :
-            self.__con.execute("delete from sentences")
-            self.__con.commit()
+            HiddenMarkovModel.__CON.execute("delete from sentences")
+            HiddenMarkovModel.__CON.commit()
             self.__init_chains()
         except sqlite3.Error as e :
             print(e)
@@ -139,7 +142,7 @@ class HiddenMarkovModel :
         if len(query_list) > 0 :
             sql += " where " + " and ".join(query_list)
         try :
-            return self.__con.execute(sql, query_tuple).fetchone()
+            return HiddenMarkovModel.__CON.execute(sql, query_tuple).fetchone()
         except sqlite3.Error as e :
             print(e)
             return None
@@ -149,10 +152,10 @@ class HiddenMarkovModel :
         if selected :
             return selected[0]
         try :
-            cursor = self.__con.cursor()
+            cursor = HiddenMarkovModel.__CON.cursor()
             cursor.execute("insert into words(word) values (?)", (word,))
             word_id = cursor.lastrowid
-            self.__con.commit()
+            HiddenMarkovModel.__CON.commit()
             return word_id
         except sqlite3.Error as e :
             print(e)
@@ -162,8 +165,8 @@ class HiddenMarkovModel :
         for i in range(HiddenMarkovModel.MIN_CHAIN, HiddenMarkovModel.MAX_CHAIN+1) :
             sql = "delete from chains" + str(i)
             try :
-                self.__con.execute(sql)
-                self.__con.commit()
+                HiddenMarkovModel.__CON.execute(sql)
+                HiddenMarkovModel.__CON.commit()
             except sqlite3.Error as e :
                 print(e)
 
@@ -182,7 +185,7 @@ class HiddenMarkovModel :
             sql += " where " + " and ".join(query_list)
         sql += " order by word_count"
         try :
-            return self.__con.execute(sql, query_tuple).fetchall()
+            return HiddenMarkovModel.__CON.execute(sql, query_tuple).fetchall()
         except sqlite3.Error as e :
             print(e)
             return []
@@ -201,8 +204,8 @@ class HiddenMarkovModel :
             sql += " set word_count=?"
             sql += " where " + " and ".join(query_list)
             try : 
-                self.__con.execute(sql, query_tuple)
-                self.__con.commit()
+                HiddenMarkovModel.__CON.execute(sql, query_tuple)
+                HiddenMarkovModel.__CON.commit()
             except sqlite3.Error as e :
                 print(e)
         else :
@@ -217,15 +220,15 @@ class HiddenMarkovModel :
             sql += "(" + ", ".join(query_list1) + ")"
             sql += " values(" + ", ".join(query_list2) + ")"
             try :
-                self.__con.execute(sql, query_tuple)
-                self.__con.commit()
+                HiddenMarkovModel.__CON.execute(sql, query_tuple)
+                HiddenMarkovModel.__CON.commit()
             except sqlite3.Error as e :
                 print(e)
 
     def __insert_sentences(self, sentence) :
         try : 
-            self.__con.execute("insert into sentences(id_sentence) values (?)", (sentence,))
-            self.__con.commit()
+            HiddenMarkovModel.__CON.execute("insert into sentences(id_sentence) values (?)", (sentence,))
+            HiddenMarkovModel.__CON.commit()
         except sqlite3.Error as e :
             print(e)
 
