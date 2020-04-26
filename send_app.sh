@@ -6,7 +6,8 @@ then
     exit -1
 fi
 
-scp -r ./instance \
+scp -r ./db \
+    ./instance \
     ./models \
     ./app.py \
     ./config.py \
