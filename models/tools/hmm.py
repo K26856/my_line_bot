@@ -5,7 +5,7 @@ from janome.tokenizer import Tokenizer
 class HiddenMarkovModel :
 
     WAKATI_TOKENIZER = Tokenizer(wakati=True)
-    DB_NAME = "./db/linebot.sqlite3"
+    DB_NAME = "./db/markov.sqlite3"
     START_WORD = "%START%"
     END_WORD = "%END%"
     MIN_CHAIN = 2
