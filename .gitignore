@@ -1,7 +1,7 @@
 nohup.out
 models/tools/hmm_base/
-db/markov.sqlite3
-db/markov.sqlite3-journal
+db/*.sqlite3
+db/*.sqlite3-journal
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
