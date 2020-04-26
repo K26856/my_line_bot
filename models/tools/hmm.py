@@ -65,7 +65,7 @@ class HiddenMarkovModel :
     def __choice_chain(self, keyword_id, chains) :
         if keyword_id :
             for chain in chains :
-                if keyword_id in chain :
+                if keyword_id == chain[self.__chain] :
                     return chain
         return random.choice(chains)
 
