@@ -1,20 +1,31 @@
-create table if not exists status_master(
+create table if not exists user_status_master(
     id text primary key,
     description text not null
 );
 
-create table if not exists user_status(
-    line_id text primary key,
-    status_id text not null,
-    foreign key(status_id) references status_master(id)
+create table if not exists scenario_master(
+    id text primary key,
+    description text not null
+);
+
+create table if not exists user_info(
+    user_id text primary key,
+    status text not null default "0000000",
+    scenario text not null default "0000000",
+    foreign key(status) references user_status_master(id),
+    foreign key(scenario) references scenario_master(id)
 );
 
 create table if not exists patterns(
-    pre_status text not null,
+    user_status_condition text not null,
+    scenario_condition text not null,
     recieve text not null,
     response text not null,
-    post_status text not null,
-    primary key(pre_status, recieve, response),
-    foreign key(pre_status) references status_master(id),
-    foreign key(post_status) references status_master(id)
+    next_user_status text not null,
+    next_scenario text not null,
+    primary key(user_status_condition, scenario_condition, recieve, response),
+    foreign key(user_status_condition) references user_status_master(id),
+    foreign key(scenario_condition) references scenario_master(id),
+    foreign key(next_user_status) references user_status_master(id),
+    foreign key(next_scenario) references scenario_master(id)
 );

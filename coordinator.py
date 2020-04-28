@@ -22,6 +22,7 @@ class Coordinator :
         }
 
     def text_message_handler(self, event) :
+        user_id = event.source.user_id
         recieved_message = event.message.text
         send_message = ''
 
@@ -37,23 +38,28 @@ class Coordinator :
             chance = randrange(0, 100)
             if chance in range(0, 34) : 
                 send_message += self.__responders['pattern'].response({
-                    'message' : recieved_message
+                    'message' : recieved_message,
+                    'user_id' : user_id
                 })
             elif chance in range(35, 59) :
                 send_message += self.__responders['template'].response({
-                    'message' : recieved_message
+                    'message' : recieved_message,
+                    'user_id' : user_id
                 })
             elif chance in range(60, 84) :
                 send_message += self.__responders['markov'].response({
-                    'message' : recieved_message
+                    'message' : recieved_message,
+                    'user_id' : user_id
                 })
             elif chance in range(85, 94) :
                 send_message += self.__responders['random'].response({
-                    'message' : recieved_message
+                    'message' : recieved_message,
+                    'user_id' : user_id
                 })
             else :
                 send_message += self.__responders['parrot'].response({
-                    'message' : recieved_message
+                    'message' : recieved_message,
+                    'user_id' : user_id
                 })
 
         # study message

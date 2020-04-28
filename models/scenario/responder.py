@@ -31,12 +31,18 @@ class RandomTalker(Responder) :
 
 class PatternTalker(Responder) : 
     def response(self, params) : 
-        for ptn in self._dictionary.pattern_messages :
-            matcher = re.match(ptn['pattern'], params['message']) 
+        patterns = self._dictionary.select_pattern_messages(user_id=params['user_id'])
+        match_patterns = []
+        for pattern in patterns :
+            matcher = re.match(pattern[0], params['message'])
             if matcher :
-                chosen_message = choice(ptn['phrases'])
-                return chosen_message.replace('%match%', matcher.group(0))
-        return choice(self._dictionary.random_messages)
+                match_patterns.append((pattern[0], pattern[1].replace('%match%', matcher.group(0)), pattern[2], pattern[3]))
+        if len(match_patterns) == 0 :
+            return choice(self._dictionary.random_messages)
+        else :
+            chosen_pattern = choice(match_patterns)
+            self._dictionary.update_user_info(params['user_id'], chosen_pattern[2], chosen_pattern[3])
+            return chosen_pattern[1]
 
 class TemplateTalker(Responder) :
     def response(self, params) :
