@@ -26,7 +26,13 @@ class Coordinator :
         recieved_message = event.message.text
         send_message = ''
 
-        if 'わたしはどこ' in recieved_message:
+        pattern_message = self.__responders['pattern'].response({
+            'message' : recieved_message,
+            'user_id' : user_id
+        })
+        if len(pattern_message) > 0 :
+            send_message = pattern_message
+        elif 'わたしはどこ' in recieved_message:
             if self.__bot_user_status == 0 :
                 send_message = 'ウチにいるよ？'
             else :
@@ -36,31 +42,28 @@ class Coordinator :
             send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
         else:
             chance = randrange(0, 100)
-            if chance in range(0, 34) : 
-                send_message += self.__responders['pattern'].response({
-                    'message' : recieved_message,
-                    'user_id' : user_id
-                })
-            elif chance in range(35, 59) :
+            if chance in range(0, 39) :
                 send_message += self.__responders['template'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
-            elif chance in range(60, 84) :
+            elif chance in range(40, 74) :
                 send_message += self.__responders['markov'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
-            elif chance in range(85, 94) :
+            elif chance in range(75, 84) :
                 send_message += self.__responders['random'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
-            else :
+            elif chance in range(85, 94) :
                 send_message += self.__responders['parrot'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
+            else :
+                pass
 
         # study message
         self.__dictionary.study(recieved_message)

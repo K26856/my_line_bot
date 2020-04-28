@@ -6,7 +6,8 @@ then
     exit -1
 fi
 
-scp -r ./db \
+scp -r ./db/markov.sqlite3 \
+     ./db/*.sql \
     ./instance \
     ./models \
     ./app.py \

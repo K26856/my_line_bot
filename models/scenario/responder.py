@@ -38,7 +38,7 @@ class PatternTalker(Responder) :
             if matcher :
                 match_patterns.append((pattern[0], pattern[1].replace('%match%', matcher.group(0)), pattern[2], pattern[3]))
         if len(match_patterns) == 0 :
-            return choice(self._dictionary.random_messages)
+            return ""
         else :
             chosen_pattern = choice(match_patterns)
             self._dictionary.update_user_info(params['user_id'], chosen_pattern[2], chosen_pattern[3])
