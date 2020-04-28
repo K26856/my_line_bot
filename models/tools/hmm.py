@@ -15,7 +15,7 @@ class HiddenMarkovModel :
     def __init__(self, chain=2) :
         if HiddenMarkovModel.__CON is None :
             HiddenMarkovModel.__CON = sqlite3.connect(HiddenMarkovModel.DB_NAME, check_same_thread=False)
-        HiddenMarkovModel.__CON.execute("pragma foreign_keys='ON'")
+            HiddenMarkovModel.__CON.execute("pragma foreign_keys='ON'")
         self.__sword_id, _ = self.__select_word_by(word=HiddenMarkovModel.START_WORD)
         self.__eword_id, _ = self.__select_word_by(word=HiddenMarkovModel.END_WORD)
         self.__chain = chain
