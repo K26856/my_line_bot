@@ -59,13 +59,15 @@ class TemplateTalker(Responder) :
 
 class MarkovTalker(Responder) :
     def response(self, params) :
-        response_text = self._markov.make_sentence()
-        if not response_text is None :
+        parts = MessageAnalyzer.analyze(params['message'])
+        keywords = [word for word, part in parts if MessageAnalyzer.is_keyword(part)]
+        if len(keywords) > 0 :
+            keyword = choice(keywords)
+            response_text = self._markov.make_sentence(keyword=keyword)
+        else :
+            response_text = self._markov.make_sentence()
+        if len(response_text) > 0 :
             return response_text
-        else : 
+        else :
             return choice(self._dictionary.random_messages)
-
-
-
-
-        
+                
