@@ -6,9 +6,12 @@ then
     exit -1
 fi
 
-scp -r ./db/markov.sqlite3 \
-     ./db/*.sql \
-    ./instance \
+for i in `find . -name "__pycache__"`
+do
+    rm -rf $i
+done
+
+scp -r ./instance \
     ./models \
     ./app.py \
     ./config.py \
