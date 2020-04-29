@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, randrange
 import re
 from models.tools.analyzer import MessageAnalyzer
 
@@ -13,8 +13,6 @@ class Responder :
                 message : text
         """
         pass
-
-
 
 class Parrot(Responder) :
     def response(self, params) : 
@@ -31,12 +29,18 @@ class RandomTalker(Responder) :
 
 class PatternTalker(Responder) : 
     def response(self, params) : 
-        for ptn in self._dictionary.pattern_messages :
-            matcher = re.match(ptn['pattern'], params['message']) 
+        patterns = self._dictionary.select_pattern_messages(user_id=params['user_id'])
+        match_patterns = []
+        for pattern in patterns :
+            matcher = re.match(pattern[0], params['message'])
             if matcher :
-                chosen_message = choice(ptn['phrases'])
-                return chosen_message.replace('%match%', matcher.group(0))
-        return choice(self._dictionary.random_messages)
+                match_patterns.append((pattern[0], pattern[1].replace('%match%', matcher.group(0)), pattern[2], pattern[3]))
+        if len(match_patterns) == 0 :
+            return ""
+        else :
+            chosen_pattern = choice(match_patterns)
+            self._dictionary.update_user_info(params['user_id'], chosen_pattern[2], chosen_pattern[3])
+            return chosen_pattern[1]
 
 class TemplateTalker(Responder) :
     def response(self, params) :
@@ -53,13 +57,16 @@ class TemplateTalker(Responder) :
 
 class MarkovTalker(Responder) :
     def response(self, params) :
-        response_text = self._markov.make_sentence()
-        if not response_text is None :
-            return response_text
-        else : 
-            return choice(self._dictionary.random_messages)
-
-
-
-
-        
+        parts = MessageAnalyzer.analyze(params['message'])
+        keywords = [word for word, part in parts if MessageAnalyzer.is_keyword(part)]
+        response_texts = []
+        if len(keywords) > 0 :
+            keyword = choice(keywords)
+            temp_response = self._markov.make_sentence(keyword=keyword)
+            if len(temp_response) > 0 :
+                response_texts.append(temp_response)
+            temp_response = self._markov.make_sentence(start_with=keyword)
+            if len(temp_response) > 0 :
+                response_texts.append(temp_response)
+        response_texts.append(self._markov.make_sentence())
+        return choice(response_texts)
