@@ -9,7 +9,6 @@ class Dictionary :
 
     DICT = {
         'random' : './models/scenario/dics/random_message.dat',
-        'pattern' : './models/scenario/dics/pattern_message.dat',
         'template' : './models/scenario/dics/template_message.dat'
     }
 

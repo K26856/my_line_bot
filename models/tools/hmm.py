@@ -15,7 +15,7 @@ class HiddenMarkovModel :
     def __init__(self, chain=2) :
         if HiddenMarkovModel.__CON is None :
             HiddenMarkovModel.__CON = sqlite3.connect(HiddenMarkovModel.DB_NAME, check_same_thread=False)
-        HiddenMarkovModel.__CON.execute("pragma foreign_keys='ON'")
+            HiddenMarkovModel.__CON.execute("pragma foreign_keys='ON'")
         self.__sword_id, _ = self.__select_word_by(word=HiddenMarkovModel.START_WORD)
         self.__eword_id, _ = self.__select_word_by(word=HiddenMarkovModel.END_WORD)
         self.__chain = chain
@@ -45,23 +45,25 @@ class HiddenMarkovModel :
         
         while counter < max_length :
             chains = self.__select_chains(**query_data)
+            if len(chains) == 0 :
+                return ""
             if counter == 0 :
-                choiced_chain = random.choice(chains)
-                choiced_word = self.__select_word_by(word_id=choiced_chain[self.__chain-1])
-                query_data["pre_word_id" + str(self.__chain)] = choiced_word[0]
-                sentence.append(choiced_word[1])
+                chosen_chain = random.choice(chains)
+                chosen_word = self.__select_word_by(word_id=chosen_chain[self.__chain-1])
+                query_data["pre_word_id" + str(self.__chain)] = chosen_word[0]
+                sentence.append(chosen_word[1])
                 counter += 1
             else :
-                choiced_chain = self.__choice_chain(keyword_id, chains)
+                chosen_chain = self.__choice_chain(keyword_id, chains)
 
-            choiced_word = self.__select_word_by(word_id=choiced_chain[self.__chain])
-            if choiced_word[0] == self.__eword_id :
+            chosen_word = self.__select_word_by(word_id=chosen_chain[self.__chain])
+            if chosen_word[0] == self.__eword_id :
                 break
-            sentence.append(choiced_word[1])
+            sentence.append(chosen_word[1])
             counter += 1
             for i in range(1, self.__chain) :
                 query_data["pre_word_id" + str(i)] = query_data["pre_word_id" + str(i+1)]
-            query_data["pre_word_id" + str(self.__chain)] = choiced_word[0]
+            query_data["pre_word_id" + str(self.__chain)] = chosen_word[0]
 
         return "".join(sentence)
 

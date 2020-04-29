@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, randrange
 import re
 from models.tools.analyzer import MessageAnalyzer
 
@@ -13,8 +13,6 @@ class Responder :
                 message : text
         """
         pass
-
-
 
 class Parrot(Responder) :
     def response(self, params) : 
@@ -59,13 +57,16 @@ class TemplateTalker(Responder) :
 
 class MarkovTalker(Responder) :
     def response(self, params) :
-        response_text = self._markov.make_sentence()
-        if not response_text is None :
-            return response_text
-        else : 
-            return choice(self._dictionary.random_messages)
-
-
-
-
-        
+        parts = MessageAnalyzer.analyze(params['message'])
+        keywords = [word for word, part in parts if MessageAnalyzer.is_keyword(part)]
+        response_texts = []
+        if len(keywords) > 0 :
+            keyword = choice(keywords)
+            temp_response = self._markov.make_sentence(keyword=keyword)
+            if len(temp_response) > 0 :
+                response_texts.append(temp_response)
+            temp_response = self._markov.make_sentence(start_with=keyword)
+            if len(temp_response) > 0 :
+                response_texts.append(temp_response)
+        response_texts.append(self._markov.make_sentence())
+        return choice(response_texts)
