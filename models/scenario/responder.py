@@ -23,7 +23,7 @@ class Parrot(Responder) :
 
 class RandomTalker(Responder) :
     def response(self, _) :
-        return choice(self._dictionary.random_messages)
+        return self._dictionary.select_random()
 
 
 
@@ -53,7 +53,7 @@ class TemplateTalker(Responder) :
                 template = template.replace('%noun%', keyword, 1)
             return template
         else :
-            return choice(self._dictionary.random_messages)
+            return self._dictionary.select_random()
 
 class MarkovTalker(Responder) :
     def response(self, params) :

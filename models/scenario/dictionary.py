@@ -4,11 +4,11 @@ import pathlib
 import sqlite3
 from collections import defaultdict
 from models.tools.analyzer import MessageAnalyzer
+from random import choice
 
 class Dictionary :
 
     DICT = {
-        'random' : './models/scenario/dics/random_message.dat',
         'template' : './models/scenario/dics/template_message.dat'
     }
 
@@ -20,24 +20,17 @@ class Dictionary :
             Dictionary.__CON = sqlite3.connect(Dictionary.__DB_NAME, check_same_thread=False)
             Dictionary.__CON.execute("pragma foreign_keys='ON'")
         Dictionary.touch_dict()
-        self.__random_messages= []
         self.__template_messages = []
-        self.load_random()
         self.load_template()
 
     def __del__(self) :
         if Dictionary.__CON is not None :
             Dictionary.__CON.close()
-        
-
-    @property
-    def random_messages(self) :
-        return self.__random_messages
+    
 
     @property
     def template_messages(self) : 
         return self.__template_messages
-
 
 
     @staticmethod
@@ -47,25 +40,28 @@ class Dictionary :
                 pathlib.Path(dic).touch()
 
 
-
     def study(self, text) :
-        self.study_random(text)
         self.study_template(MessageAnalyzer.analyze(text))
+        self.insert_randoms(text)
 
 
+    def select_random(self) :
+        try :
+            randoms = Dictionary.__CON.execute("select message from randoms order by random() limit 5").fetchall()
+            if len(randoms) > 0 :
+                return choice(randoms)[0]
+            else :
+                return ""
+        except sqlite3.Error as e:
+            print(e)
+            return ""
 
-    def load_random(self) :
-        with open(Dictionary.DICT['random'], mode='r', encoding='utf-8') as f :
-            self.__random_messages = [x for x in f.read().splitlines() if x]
-
-    def study_random(self, text) : 
-        if not text in self.__random_messages : 
-            self.__random_messages.append(text)
-            self.save_random()
-
-    def save_random(self) :
-        with open(Dictionary.DICT['random'], mode='w', encoding='utf-8') as f : 
-            f.write('\n'.join(self.__random_messages))
+    def insert_randoms(self, text) :
+        try :
+            Dictionary.__CON.execute("insert into randoms(message) values (?)", (text,))
+            Dictionary.__CON.commit()
+        except sqlite3.Error as e:
+            print(e)
 
     def select_pattern_messages(self, user_id) :
         user_info = self.select_user_info(user_id)
