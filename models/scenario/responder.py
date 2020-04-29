@@ -59,16 +59,14 @@ class MarkovTalker(Responder) :
     def response(self, params) :
         parts = MessageAnalyzer.analyze(params['message'])
         keywords = [word for word, part in parts if MessageAnalyzer.is_keyword(part)]
+        response_texts = []
         if len(keywords) > 0 :
             keyword = choice(keywords)
-            chance = randrange(0, 2)
-            if chance == 0 :
-                response_text = self._markov.make_sentence(keyword=keyword)
-            else :
-                response_text = self._markov.make_sentence(start_with=keyword)
-        else :
-            response_text = self._markov.make_sentence()
-        if len(response_text) > 0 :
-            return response_text
-        else :
-            return choice(self._dictionary.random_messages)
+            temp_response = self._markov.make_sentence(keyword=keyword)
+            if len(temp_response) > 0 :
+                response_texts.append(temp_response)
+            temp_response = self._markov.make_sentence(start_with=keyword)
+            if len(temp_response) > 0 :
+                response_texts.append(temp_response)
+        response_texts.append(self._markov.make_sentence())
+        return choice(response_texts)

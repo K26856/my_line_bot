@@ -62,6 +62,9 @@ def webhook():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     send_message = scenario.text_message_handler(event)
+    if len(send_message) <= 0 :
+        app.logger.debug("no message")
+        return
 
     # 即答せずに少し待つ
     time.sleep(random.randrange(5, 20, 1))
@@ -69,4 +72,4 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=send_message)
-        )
+    )
