@@ -4,7 +4,7 @@ import pathlib
 import sqlite3
 from collections import defaultdict
 from models.tools.analyzer import MessageAnalyzer
-from random import choice
+from random import choice, randrange
 
 class Dictionary :
 
@@ -47,9 +47,11 @@ class Dictionary :
 
     def select_random(self) :
         try :
-            randoms = Dictionary.__CON.execute("select message from randoms order by random() limit 5").fetchall()
-            if len(randoms) > 0 :
-                return choice(randoms)[0]
+            count = Dictionary.__CON.execute("select count(message) from randoms").fetchone()[0]
+            rand = randrange(0, count)
+            random_message = Dictionary.__CON.execute("select message from randoms limit ?,1", (rand,)).fetchone()
+            if random_message :
+                return random_message[0]
             else :
                 return ""
         except sqlite3.Error as e:
