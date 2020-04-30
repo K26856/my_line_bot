@@ -24,6 +24,8 @@ class Dictionary :
     def select_random(self) :
         try :
             count = Dictionary.__CON.execute("select count(message) from randoms").fetchone()[0]
+            if count == 0 :
+                return ""
             rand = randrange(0, count)
             random_message = Dictionary.__CON.execute("select message from randoms limit ?,1", (rand,)).fetchone()
             if random_message :
