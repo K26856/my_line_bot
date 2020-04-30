@@ -47,8 +47,8 @@ class TemplateTalker(Responder) :
         parts = MessageAnalyzer.analyze(params['message'])
         keywords = [word for word, part in parts if MessageAnalyzer.is_keyword(part)]
         count = len(keywords)
-        if count > 0 and count in self._dictionary.template_messages :
-            template = choice(self._dictionary.template_messages[count])
+        template = self._dictionary.select_template(count)
+        if len(template) > 0 :
             for keyword in keywords :
                 template = template.replace('%noun%', keyword, 1)
             return template
