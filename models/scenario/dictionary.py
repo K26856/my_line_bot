@@ -1,16 +1,8 @@
-import re
-import os
-import pathlib
 import sqlite3
-from collections import defaultdict
 from models.tools.analyzer import MessageAnalyzer
 from random import choice, randrange
 
 class Dictionary :
-
-    DICT = {
-        'template' : './models/scenario/dics/template_message.dat'
-    }
 
     __DB_NAME = "./db/linebot.sqlite3"
     __CON = None
@@ -19,30 +11,14 @@ class Dictionary :
         if Dictionary.__CON is None :
             Dictionary.__CON = sqlite3.connect(Dictionary.__DB_NAME, check_same_thread=False)
             Dictionary.__CON.execute("pragma foreign_keys='ON'")
-        Dictionary.touch_dict()
-        self.__template_messages = []
-        self.load_template()
 
     def __del__(self) :
         if Dictionary.__CON is not None :
             Dictionary.__CON.close()
     
-
-    @property
-    def template_messages(self) : 
-        return self.__template_messages
-
-
-    @staticmethod
-    def touch_dict() : 
-        for dic in Dictionary.DICT.values() :
-            if not pathlib.Path(dic).exists() :
-                pathlib.Path(dic).touch()
-
-
     def study(self, text) :
-        self.study_template(MessageAnalyzer.analyze(text))
         self.insert_randoms(text)
+        self.insert_templates(text)
 
 
     def select_random(self) :
@@ -65,6 +41,47 @@ class Dictionary :
         except sqlite3.Error as e:
             print(e)
 
+    def select_template(self, word_num_condition) :
+        try : 
+            count = Dictionary.__CON.execute(
+                "select count(word_num_condition) from templates where word_num_condition=?" , 
+                (word_num_condition,)
+                ).fetchone()[0]
+            if count == 0 :
+                return ""
+            rand = randrange(0, count)
+            template_message = Dictionary.__CON.execute(
+                "select message from templates where word_num_condition=? limit ?,1",
+                (word_num_condition, rand)
+                ).fetchone()
+            if template_message :
+                return template_message[0]
+            else :
+                return ""
+        except sqlite3.Error as e :
+            print(e)
+            return ""
+
+    def insert_templates(self, text) :
+        parts = MessageAnalyzer.analyze(text)
+        message = ''
+        count = 0
+        for word, part in parts :
+            if MessageAnalyzer.is_keyword(part) :
+                word = '%noun%'
+                count += 1
+            message += word
+        if count <= 0 :
+            return 
+        try :
+            self.__CON.execute(
+                "insert into templates(message, word_num_condition) values (?,?)",
+                (message, count)
+            )
+            self.__CON.commit()
+        except sqlite3.Error as e :
+            print(e)
+                    
     def select_pattern_messages(self, user_id) :
         user_info = self.select_user_info(user_id)
         if user_info is None :
@@ -110,30 +127,3 @@ class Dictionary :
             Dictionary.__CON.commit()
         except sqlite3.Error as e :
             print(e)
-
-    def load_template(self) :
-        with open(Dictionary.DICT['template'], mode='r', encoding='utf-8') as f :
-            self.__template_messages = defaultdict(list)
-            for line in f :
-                if line : 
-                    count, template = line.strip().split('\t')
-                    if count and template :
-                        count = int(count)
-                        self.__template_messages[count].append(template)
-
-    def study_template(self, parts) :
-        template = ''
-        count = 0
-        for word, part in parts :
-            if MessageAnalyzer.is_keyword(part) :
-                word = '%noun%'
-                count += 1
-            template += word
-        if count > 0 and template and not template in self.__template_messages[count] :
-            self.__template_messages[count].append(template)
-            
-    def save_template(self) : 
-        with open(Dictionary.DICT['template'], mode='w', encoding='utf-8') as f :
-            for count, templates in self.__template_messages.items() :
-                for template in templates :
-                    f.writelines('{}\t{}'.format(count, template))
