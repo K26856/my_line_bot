@@ -143,14 +143,10 @@ class WordNet :
         if len(wordnet_words) == 0 :
             return result
         _, _, _, _, choiced_synset, _ = choice(wordnet_words)
-        print("choiced_synset : " + choiced_synset)
         hyponym_synset = self.get_descendant_randomly_by_synset(choiced_synset)
         choiced_words = self.get_words_by_synset(hyponym_synset)
-        if hyponym_synset is None :
-            print("hyponym_synset : None")
-        else :
-            print("hyponym_synset : " + hyponym_synset)
         if len(choiced_words) == 0 :
             return result
         result = choice(choiced_words)
         return result
+        
