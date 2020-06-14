@@ -28,11 +28,9 @@ export FLASK_PORT=<YOUR_PORT>
 # nohup ./start.sh &
 ```
 
-
-## 勉強元
-- 人口無能 : http://sandmark.hateblo.jp/entry/2017/10/07/141339
-
-
 ## references
-Japanese Wordnet (vXX) © 2009-2011 NICT, 2012-2015 Francis Bond and 2016-2017 Francis Bond, Takayuki Kuribayashi
-linked to http://compling.hss.ntu.edu.sg/wnja/index.en.html
+- Python初心者に送る「人工知能の作り方」
+    - http://sandmark.hateblo.jp/entry/2017/10/07/141339
+- 日本語版 wordnet
+    - Japanese Wordnet (vXX) © 2009-2011 NICT, 2012-2015 Francis Bond and 2016-2017 Francis Bond, Takayuki Kuribayashi
+    - linked to http://compling.hss.ntu.edu.sg/wnja/index.en.html
