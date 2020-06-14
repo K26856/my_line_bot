@@ -18,11 +18,13 @@ class WordNet :
         sql += "s.synset=ss.synset and "
         sql += "w.lemma=?"
         query = (lemma,)
-        if self.lang is not None :
-            sql += " and w.lang=?"
-            query += (self.lang,)
         try :
-            return WordNet.__CON.execute(sql, query).fetchall()
+            results = WordNet.__CON.execute(sql, query).fetchall()
+            if self.lang is not None :
+                temp = [x for x in results if self.lang in x]
+                if len(temp) > 0 :
+                    results = temp
+            return results
         except sqlite3.Error as e :
             print(e)
             return []
@@ -34,11 +36,13 @@ class WordNet :
         sql += "s.synset=ss.synset and "
         sql += "s.synset=?"
         query = (synset,)
-        if self.lang is not None :
-            sql += " and w.lang=?"
-            query += (self.lang,)
         try :
-            return WordNet.__CON.execute(sql, query).fetchall()
+            results = WordNet.__CON.execute(sql, query).fetchall()
+            if self.lang is not None :
+                temp = [x for x in results if self.lang in x]
+                if len(temp) > 0 :
+                    results = temp
+            return results
         except sqlite3.Error as e :
             print(e)
             return []
