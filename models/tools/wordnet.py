@@ -36,6 +36,15 @@ class WordNet :
             print(e)
             return []
 
+    def get_synsets_by_name(self, name) :
+        sql =  "select synset, name from synset where name=?"
+        query = (name,)
+        try :
+            return WordNet.__CON.execute(sql, query).fetchall()
+        except sqlite3.Error as e :
+            print(e)
+            return []
+
     def get_ancestors_by_synset(self, synset) :
         sql =  "select hops, synset1, synset2 "
         sql += "from ancestor "
@@ -124,18 +133,46 @@ class WordNet :
                 results[name][hops].extend(temp_results)
         return results
 
+    def get_hyponyms_by_synset(self, synset) :
+        results = []
+        descendants = self.get_descendants_by_synset(synset)
+        for synset in descendants :
+            results.extend(self.get_words_by_synset(synset))
+        return results
+
+    def get_hyponyms_by_synset_name(self, synset_name) :
+        results = []
+        synsets = self.get_synsets_by_name(synset_name)
+        for synset, _ in synsets :
+            results.extend(self.get_hyponyms_by_synset(synset))
+        return results
+
     def get_hyponyms_by_lemma(self, lemma) :
-        results = {}
+        results = []
         wordnet_words = self.get_words_by_lemma(lemma)
         if len(wordnet_words) == 0 :
             return results
-        for _, _, _, _, synset, name in wordnet_words :
-            descendants = self.get_descendants_by_synset(synset)
-            if not name in results.keys() :
-                results[name] = []
-            for synset in descendants :
-                results[name].extend(self.get_words_by_synset(synset))
+        for _, _, _, _, synset, _ in wordnet_words :
+            results.extend(self.get_hyponyms_by_synset(synset))
         return results
+
+    def get_hyponym_randomly_by_synset(self, synset) :
+        result = None
+        hyponym_synset = self.get_descendant_randomly_by_synset(synset)
+        choiced_words = self.get_words_by_synset(hyponym_synset)
+        if len(choiced_words) == 0 :
+            return result
+        result = choice(choiced_words)
+        return result
+
+    def get_hyponym_randomly_by_synset_name(self, synset_name) :
+        result = None
+        synsets = self.get_synsets_by_name(synset_name)
+        if len(synsets) == 0 :
+            return result
+        synset, _ = choice(synsets)
+        result = self.get_hyponym_randomly_by_synset(synset)
+        return result
 
     def get_hyponym_randomly_by_lemma(self, lemma) :
         result = None
@@ -143,10 +180,4 @@ class WordNet :
         if len(wordnet_words) == 0 :
             return result
         _, _, _, _, choiced_synset, _ = choice(wordnet_words)
-        hyponym_synset = self.get_descendant_randomly_by_synset(choiced_synset)
-        choiced_words = self.get_words_by_synset(hyponym_synset)
-        if len(choiced_words) == 0 :
-            return result
-        result = choice(choiced_words)
-        return result
-        
+        return self.get_hyponym_randomly_by_synset(choiced_synset)
