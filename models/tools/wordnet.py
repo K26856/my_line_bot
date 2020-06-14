@@ -6,9 +6,10 @@ class WordNet :
     DB_NAME = "./db/wnjpn.db"
     __CON = None
 
-    def __init__(self) :
+    def __init__(self, lang=None) :
         if WordNet.__CON is None :
             WordNet.__CON = sqlite3.connect(WordNet.DB_NAME, check_same_thread=False)
+        self.lang = lang
 
     def get_words_by_lemma(self, lemma) :
         sql =  "select w.lemma, w.pos, w.lang, w.wordid, s.synset, ss.name "
@@ -17,6 +18,9 @@ class WordNet :
         sql += "s.synset=ss.synset and "
         sql += "w.lemma=?"
         query = (lemma,)
+        if self.lang is not None :
+            sql += " and w.lang=?"
+            query += (self.lang,)
         try :
             return WordNet.__CON.execute(sql, query).fetchall()
         except sqlite3.Error as e :
@@ -30,6 +34,9 @@ class WordNet :
         sql += "s.synset=ss.synset and "
         sql += "s.synset=?"
         query = (synset,)
+        if self.lang is not None :
+            sql += " and w.lang=?"
+            query += (self.lang,)
         try :
             return WordNet.__CON.execute(sql, query).fetchall()
         except sqlite3.Error as e :
