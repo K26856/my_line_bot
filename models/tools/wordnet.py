@@ -175,16 +175,25 @@ class WordNet :
     def get_hyponym_randomly_by_synset_name(self, synset_name) :
         result = None
         synsets = self.get_synsets_by_name(synset_name)
-        if len(synsets) == 0 :
+        hyponyms = []
+        for synset, _ in synsets :
+            hyponym = self.get_hyponym_randomly_by_synset(synset)
+            if hyponym is not None : 
+                hyponyms.append(hyponym)
+        if len(hyponyms) == 0 :
             return result
-        synset, _ = choice(synsets)
-        result = self.get_hyponym_randomly_by_synset(synset)
+        result = choice(hyponyms)
         return result
 
     def get_hyponym_randomly_by_lemma(self, lemma) :
         result = None
         wordnet_words = self.get_words_by_lemma(lemma)
-        if len(wordnet_words) == 0 :
+        hyponyms = []
+        for _, _, _, _, synset, _ in wordnet_words :
+            hyponym = self.get_hyponym_randomly_by_synset(synset)
+            if hyponyms is not None :
+                hyponyms.append(hyponym)
+        if len(hyponyms) == 0 :
             return result
-        _, _, _, _, choiced_synset, _ = choice(wordnet_words)
-        return self.get_hyponym_randomly_by_synset(choiced_synset)
+        result = choice(hyponyms)
+        return result
