@@ -2,6 +2,7 @@ nohup.out
 models/tools/hmm_base/
 db/*.sqlite3
 db/*.sqlite3-journal
+db/*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
