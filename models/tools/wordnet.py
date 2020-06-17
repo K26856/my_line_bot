@@ -68,6 +68,18 @@ class WordNet :
             print(e)
             return []
 
+    def get_ancestors_n_synstes_by_synset(self, synset) :
+        sql =  "select a.hops, a.synset1, a.synset2, s.name "
+        sql += "from ancestor a, synset s "
+        sql += "where a.synset2 = s.synset and "
+        sql += "a.synset1 = ?"
+        query = (synset, )
+        try :
+            return WordNet.__CON.execute(sql, query).fetchall()
+        except sqlite3.Error as e :
+            print(e)
+            return []
+
     def __get_descendants_one_hop_by_synset(self, synset) :
         sql =  "select synset1, synset2, link "
         sql += "from synlink "
@@ -142,6 +154,21 @@ class WordNet :
                 if not hops in results[name].keys() :
                     results[name][hops] = []
                 results[name][hops].extend(temp_results)
+        return results
+
+    def get_hypersynsets_by_lemma(self, lemma) :
+        results = {}
+        wordnet_words = self.get_words_by_lemma(lemma)
+        if len(wordnet_words) == 0 :
+            return results
+        for _, _, _, _, synset, name in wordnet_words :
+            ancestors = self.get_ancestors_n_synstes_by_synset(synset)
+            if not name in results.keys() :
+                results[name] = {}
+            for hops, _, _, synset2_name in ancestors :
+                if not hops in results[name].keys() :
+                    results[name][hops] = []
+                results[name][hops].append(synset2_name)
         return results
 
     def get_hyponyms_by_synset(self, synset) :
