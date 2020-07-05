@@ -228,3 +228,48 @@ class WordNet :
             return result
         result = choice(hyponyms)
         return result
+
+
+    def get_hyponymsynsets_by_synset(self, synset, results={}) :
+        # initialize
+        if "synset" not in results.keys() :
+            results["synset"] = synset
+        if "hyposynsets" not in results.keys() :
+            results["hyposynsets"] = []
+
+        # get_data
+        sql  = "select s1.synset, s1.name, s2.synset, s2.name, sl.link "
+        sql += "from synlink sl, synset s1, synset s2 "
+        sql += "where sl.synset1 = s1.synset "
+        sql += "and sl.synset2 = s2.synset "
+        sql += "and sl.link='hype' "
+        sql += "and s2.synset=? "
+        query = (synset, )
+        try : 
+            for s1_synset, s1_name, _, s2_name, _ in WordNet.__CON.execute(sql, query).fetchall() :
+                if "name" not in results.keys() :
+                    results["name"] = s2_name
+                results["hyposynsets"].append({
+                    "name" : s1_name,
+                    "synset" : s1_synset,
+                    "hyposynsets" : []
+                })            
+            return results
+        except sqlite3.Error as e :
+            print(e)
+            return None
+
+    def get_hyponymsynsets_by_synset_n_hops(self, synset, hops, results={}) :
+        if hops <= 0 :
+            return
+        self.get_hyponymsynsets_by_synset(synset, results)
+        for temp in results["hyposynsets"] :
+            self.get_hyponymsynsets_by_synset_n_hops(temp["synset"], hops-1, temp)
+
+    def print_hyponymsynsets(self, inputs={}, call_num=0) :
+        for _ in range(0, call_num) :
+            print("  ", end="")
+        print(inputs["name"])
+        for temp in inputs["hyposynsets"] :
+            self.print_hyponymsynsets(temp, call_num+1)
+

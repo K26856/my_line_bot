@@ -44,6 +44,20 @@ where
 order by a.hops;
 ```
 
+## information
+- root of noun
+    - entity (00001740-n)
+- basis depth for abstracting wor
+    - under 4 from root
+    - sample
+    ```
+    entity
+      physical_entity
+        matter
+          solid
+            food
+    ```
+
 ## memo
 - variant
     - empty?
