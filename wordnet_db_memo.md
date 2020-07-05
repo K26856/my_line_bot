@@ -47,8 +47,8 @@ order by a.hops;
 ## information
 - root of noun
     - entity (00001740-n)
-- basis depth for abstracting wor
-    - under 4 from root
+- basis depth for abstracting word
+    - under 5 from root
     - sample
     ```
     entity
