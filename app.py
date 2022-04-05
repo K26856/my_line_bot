@@ -35,7 +35,7 @@ line_bot_api = LineBotApi(app.config['LINE_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(app.config['LINE_CHANNEL_SECRET'])
 
 # bot scenario
-scenario = coordinator.Coordinator()
+scenario = coordinator.Coordinator(app.config)
 app.logger.info("[OK] loading coodinator")
 
 # webhook
