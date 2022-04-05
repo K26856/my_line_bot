@@ -1,6 +1,7 @@
 from random import choice, randrange
 import re
 from models.tools.analyzer import MessageAnalyzer
+from models.tools.mebo_adapter import Mebo
 
 class Responder :
     def __init__(self, dictionary, markov) :
@@ -10,7 +11,8 @@ class Responder :
     def response(self, params):
         """
             params : 
-                message : text
+                message : text,
+                user_id : user_id
         """
         pass
 
@@ -70,3 +72,10 @@ class MarkovTalker(Responder) :
                 response_texts.append(temp_response)
         response_texts.append(self._markov.make_sentence())
         return choice(response_texts)
+
+class MeboTalker(Responder) :
+    def __init__(self, mebo_api_key, mebo_agent_id) :
+        self.__mebo = Mebo(mebo_api_key, mebo_agent_id)
+
+    def response(self, params) :
+        return self.__mebo.send_message(params['message'], params['user_id'])

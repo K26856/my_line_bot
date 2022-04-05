@@ -6,7 +6,7 @@ from random import choice, randrange
 
 class Coordinator :
     
-    def __init__(self) :
+    def __init__(self, app_config) :
         # user_status
         # 0 : present
         # 1 : absent
@@ -18,7 +18,8 @@ class Coordinator :
             'random' : responder.RandomTalker(self.__dictionary, self.__markov),
             'pattern' : responder.PatternTalker(self.__dictionary, self.__markov),
             'template' : responder.TemplateTalker(self.__dictionary, self.__markov),
-            'markov' : responder.MarkovTalker(self.__dictionary, self.__markov)
+            'markov' : responder.MarkovTalker(self.__dictionary, self.__markov),
+            'mebo' : responder.MeboTalker(app_config['MEBO_API_KEY'], app_config['MEBO_AGENT_ID'])
         }
 
     def text_message_handler(self, event) :
@@ -42,25 +43,30 @@ class Coordinator :
             send_message = 'これが食べたいな。\r\n' + recipe_site.get_random_recipe()
         else:
             chance = randrange(0, 100)
-            if chance in range(0, 39) :
+            if chance in range(0, 19) :
                 send_message += self.__responders['template'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
-            elif chance in range(40, 74) :
+            elif chance in range(20, 29) :
                 send_message += self.__responders['markov'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
-            elif chance in range(75, 84) :
+            elif chance in range(30, 34) :
                 send_message += self.__responders['random'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
                 })
-            elif chance in range(85, 94) :
+            elif chance in range(35, 39) :
                 send_message += self.__responders['parrot'].response({
                     'message' : recieved_message,
                     'user_id' : user_id
+                })
+            elif chance in range(40, 100) :
+                send_message += self.__responders['mebo'].response({
+                    'message' : recieved_message,
+                    'user_id' :user_id
                 })
             else :
                 pass
